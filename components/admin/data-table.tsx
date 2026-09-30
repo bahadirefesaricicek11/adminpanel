@@ -72,7 +72,7 @@ export function DataTable<T extends { id: string | number }>(
                 </th>
               ))}
               <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">
-                Actions
+                İşlemler
               </th>
             </tr>
           </thead>
@@ -101,6 +101,7 @@ export function DataTable<T extends { id: string | number }>(
                       <button
                         onClick={() => onEdit(row)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                        title="Düzenle"
                       >
                         <Edit2 size={16} />
                       </button>
@@ -109,6 +110,7 @@ export function DataTable<T extends { id: string | number }>(
                       <button
                         onClick={() => onDelete(row)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded"
+                        title="Sil"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -123,14 +125,14 @@ export function DataTable<T extends { id: string | number }>(
 
       {data.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-slate-500">No data available</p>
+          <p className="text-slate-500">Gösterilecek veri bulunamadı</p>
         </div>
       )}
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200">
           <p className="text-sm text-slate-600">
-            Page {currentPage} of {totalPages}
+            Sayfa {currentPage} / {totalPages}
           </p>
           <div className="flex gap-2">
             <Button
