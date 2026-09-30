@@ -22,21 +22,30 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
+      // Log what we're sending
+      console.log('Login attempt:');
+      console.log('Email:', email);
+      console.log('Password length:', password.length);
+      
       // Validate credentials
-      if (validateCredentials(email.trim(), password)) {
+      if (validateCredentials(email, password)) {
         // Set auth token
         const token = generateToken();
         setAuthToken(token);
+        
+        console.log('Login successful!');
         
         // Redirect to dashboard
         setTimeout(() => {
           router.push('/admin');
         }, 100);
       } else {
-        setError('Invalid email or password. Please check your credentials.');
+        console.log('Credentials do not match');
+        setError('Invalid email or password. Please check your credentials carefully.');
         setIsLoading(false);
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('An error occurred. Please try again.');
       setIsLoading(false);
     }

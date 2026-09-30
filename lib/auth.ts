@@ -3,7 +3,16 @@ const ADMIN_EMAIL = 'bahadirefesaricicek11@gmail.com';
 const ADMIN_PASSWORD = 'adminpaneltestcode123';
 
 export function validateCredentials(email: string, password: string): boolean {
-  return email === ADMIN_EMAIL && password === ADMIN_PASSWORD;
+  const trimmedEmail = email.trim().toLowerCase();
+  const trimmedPassword = password.trim();
+  
+  console.log('Email attempt:', trimmedEmail);
+  console.log('Email expected:', ADMIN_EMAIL.toLowerCase());
+  console.log('Password attempt length:', trimmedPassword.length);
+  console.log('Password expected length:', ADMIN_PASSWORD.length);
+  console.log('Match:', trimmedEmail === ADMIN_EMAIL.toLowerCase() && trimmedPassword === ADMIN_PASSWORD);
+  
+  return trimmedEmail === ADMIN_EMAIL.toLowerCase() && trimmedPassword === ADMIN_PASSWORD;
 }
 
 export function setAuthToken(token: string): void {
