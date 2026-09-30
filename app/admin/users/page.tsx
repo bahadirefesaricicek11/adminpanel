@@ -1,5 +1,3 @@
-'use server';
-
 import { DataTable } from '@/components/admin/data-table';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

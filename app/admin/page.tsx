@@ -1,9 +1,10 @@
-'use server';
+'use client';
 
 import { StatCard } from '@/components/admin/stat-card';
 import { Card } from '@/components/ui/card';
-import { BarChart3, Users, Briefcase, DollarSign, TrendingUp } from 'lucide-react';
+import { Briefcase, Users, DollarSign, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useEffect, useState } from 'react';
 import { getDashboardStats } from '@/lib/supabase/queries';
 
 const dashboardData = [
@@ -21,8 +22,46 @@ const jobTypeData = [
   { name: 'Commercial', value: 25, color: '#f59e0b' },
 ];
 
-export default async function AdminDashboard() {
-  const stats = await getDashboardStats();
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalJobs: 0,
+    completedJobs: 0,
+    pendingJobs: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
+const dashboardData = [
+  { month: 'Jan', jobs: 24, revenue: 12000 },
+  { month: 'Feb', jobs: 32, revenue: 15000 },
+  { month: 'Mar', jobs: 28, revenue: 14000 },
+  { month: 'Apr', jobs: 41, revenue: 18000 },
+  { month: 'May', jobs: 35, revenue: 16500 },
+  { month: 'Jun', jobs: 48, revenue: 22000 },
+];
+
+const jobTypeData = [
+  { name: 'Interior', value: 45, color: '#3b82f6' },
+  { name: 'Exterior', value: 30, color: '#10b981' },
+  { name: 'Commercial', value: 25, color: '#f59e0b' },
+];
 
   return (
     <div className="space-y-8">
@@ -35,7 +74,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Jobs"
-          value={stats.totalJobs}
+          value={loading ? '-' : stats.totalJobs}
           description={`${stats.completedJobs} completed`}
           icon={Briefcase}
           trend="up"
@@ -44,7 +83,7 @@ export default async function AdminDashboard() {
         />
         <StatCard
           title="Active Users"
-          value={stats.activeUsers}
+          value={loading ? '-' : stats.activeUsers}
           description={`of ${stats.totalUsers} team members`}
           icon={Users}
           trend="up"
@@ -53,7 +92,7 @@ export default async function AdminDashboard() {
         />
         <StatCard
           title="Revenue"
-          value={`$${(stats.totalRevenue / 1000).toFixed(1)}k`}
+          value={loading ? '-' : `$${(stats.totalRevenue / 1000).toFixed(1)}k`}
           description="Total earnings"
           icon={DollarSign}
           trend="up"
@@ -62,7 +101,7 @@ export default async function AdminDashboard() {
         />
         <StatCard
           title="Pending Jobs"
-          value={stats.pendingJobs}
+          value={loading ? '-' : stats.pendingJobs}
           description="Awaiting completion"
           icon={TrendingUp}
           trend="down"
