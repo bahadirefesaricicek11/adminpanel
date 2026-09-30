@@ -9,7 +9,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 text-2xl font-bold text-slate-900">
             <Brush className="text-blue-700" size={28} />
-            <span>PaintCo Admin</span>
+            <span>Site Admin</span>
           </div>
           <div className="flex gap-4">
             <Link
