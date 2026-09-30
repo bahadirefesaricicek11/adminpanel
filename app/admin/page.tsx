@@ -22,18 +22,18 @@ import {
 import { getDashboardStats } from '@/lib/supabase/queries';
 
 const dashboardData = [
-  { month: 'Jan', jobs: 24, revenue: 12000 },
-  { month: 'Feb', jobs: 32, revenue: 15000 },
+  { month: 'Oca', jobs: 24, revenue: 12000 },
+  { month: 'Şub', jobs: 32, revenue: 15000 },
   { month: 'Mar', jobs: 28, revenue: 14000 },
-  { month: 'Apr', jobs: 41, revenue: 18000 },
+  { month: 'Nis', jobs: 41, revenue: 18000 },
   { month: 'May', jobs: 35, revenue: 16500 },
-  { month: 'Jun', jobs: 48, revenue: 22000 },
+  { month: 'Haz', jobs: 48, revenue: 22000 },
 ];
 
 const jobTypeData = [
-  { name: 'Interior', value: 45, color: '#1e3a8a' },
-  { name: 'Exterior', value: 30, color: '#3b82f6' },
-  { name: 'Commercial', value: 25, color: '#93c5fd' },
+  { name: 'İç Mekan', value: 45, color: '#2563eb' }, // Vibrant Royal Blue
+  { name: 'Dış Mekan', value: 30, color: '#38bdf8' }, // Light Sky Blue
+  { name: 'Ticari', value: 25, color: '#818cf8' },   // Soft Indigo Accent
 ];
 
 export default function AdminDashboard() {
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
         const data = await getDashboardStats();
         setStats(data);
       } catch (error) {
-        console.error('Error loading stats:', error);
+        console.error('İstatistikler yüklenirken hata oluştu:', error);
       } finally {
         setLoading(false);
       }
@@ -65,18 +65,18 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen space-y-8 bg-slate-50/50 p-6">
+    <div className="min-h-screen space-y-8 bg-slate-50/60 p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Kontrol Paneli</h1>
           <p className="mt-0.5 text-sm text-slate-500">
-            Welcome back to PaintCo Management System
+            PaintCo Yönetim Sistemine tekrar hoş geldiniz
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-            System Operational
+          <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            Sistem Aktif
           </span>
         </div>
       </div>
@@ -84,39 +84,39 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Total Jobs"
+          title="Toplam İş"
           value={loading ? '-' : stats.totalJobs}
-          description={`${stats.completedJobs} completed`}
+          description={`${stats.completedJobs} tamamlandı`}
           icon={Briefcase}
           trend="up"
-          trendValue="12% from last month"
+          trendValue="Geçen aya göre %12 artış"
           color="blue"
         />
         <StatCard
-          title="Active Users"
+          title="Aktif Kullanıcılar"
           value={loading ? '-' : stats.activeUsers}
-          description={`of ${stats.totalUsers} team members`}
+          description={`${stats.totalUsers} ekip üyesinden`}
           icon={Users}
           trend="up"
-          trendValue="3 new this month"
+          trendValue="Bu ay 3 yeni üye"
           color="blue"
         />
         <StatCard
-          title="Revenue"
-          value={loading ? '-' : `$${(stats.totalRevenue / 1000).toFixed(1)}k`}
-          description="Total earnings"
+          title="Toplam Gelir"
+          value={loading ? '-' : `₺${(stats.totalRevenue / 1000).toFixed(1)}b`}
+          description="Toplam kazanç"
           icon={DollarSign}
           trend="up"
-          trendValue="8% growth"
+          trendValue="%8 büyüme"
           color="blue"
         />
         <StatCard
-          title="Pending Jobs"
+          title="Bekleyen İşler"
           value={loading ? '-' : stats.pendingJobs}
-          description="Awaiting completion"
+          description="Tamamlanmayı bekleyen"
           icon={TrendingUp}
           trend="down"
-          trendValue="2 less than last month"
+          trendValue="Geçen aya göre 2 eksik"
           color="blue"
         />
       </div>
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
             {/* Line Chart */}
             <Card className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm lg:col-span-2">
               <h2 className="mb-4 text-base font-semibold text-slate-900">
-                Jobs & Revenue Trend
+                İş ve Gelir Trendi
               </h2>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={dashboardData}>
@@ -149,20 +149,20 @@ export default function AdminDashboard() {
                     yAxisId="left"
                     type="monotone"
                     dataKey="jobs"
-                    name="Jobs Completed"
-                    stroke="#1e3a8a"
+                    name="Tamamlanan İşler"
+                    stroke="#2563eb"
                     strokeWidth={2.5}
-                    dot={{ fill: '#1e3a8a', r: 4 }}
+                    dot={{ fill: '#2563eb', r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                   <Line
                     yAxisId="right"
                     type="monotone"
                     dataKey="revenue"
-                    name="Revenue ($)"
-                    stroke="#60a5fa"
+                    name="Gelir (₺)"
+                    stroke="#38bdf8"
                     strokeWidth={2.5}
-                    dot={{ fill: '#60a5fa', r: 4 }}
+                    dot={{ fill: '#38bdf8', r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
 
             {/* Pie Chart */}
             <Card className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-base font-semibold text-slate-900">Job Types</h2>
+              <h2 className="mb-4 text-base font-semibold text-slate-900">İş Türleri</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
                     outerRadius={80}
                     paddingAngle={4}
                     dataKey="value"
-                    label={({ name, value }) => `${name} ${value}%`}
+                    label={({ name, value }) => `${name} %${value}`}
                     labelLine={false}
                   >
                     {jobTypeData.map((entry, index) => (
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
 
           {/* Bar Chart */}
           <Card className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">Monthly Performance</h2>
+            <h2 className="mb-4 text-base font-semibold text-slate-900">Aylık Performans</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dashboardData}>
                 <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical={false} />
@@ -219,8 +219,8 @@ export default function AdminDashboard() {
                   }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                <Bar dataKey="jobs" name="Jobs" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="revenue" name="Revenue ($)" fill="#93c5fd" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="jobs" name="İş Sayısı" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" name="Gelir (₺)" fill="#93c5fd" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
