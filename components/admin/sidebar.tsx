@@ -1,11 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { BarChart3, Users, Briefcase, Settings } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { BarChart3, Users, Briefcase, Settings, LogOut } from 'lucide-react';
+import { clearAuthToken } from '@/lib/auth';
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    clearAuthToken();
+    router.push('/admin/login');
+  };
 
   const navItems = [
     { href: '/admin', icon: BarChart3, label: 'Dashboard', exact: true },
@@ -45,12 +52,13 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-6 border-t border-slate-700">
-        <Link
-          href="/auth/login"
-          className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white transition-colors"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors rounded-lg"
         >
+          <LogOut size={20} />
           <span>Logout</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );
