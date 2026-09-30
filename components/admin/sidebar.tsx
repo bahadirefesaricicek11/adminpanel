@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-  { title: 'Kontrol Paneli', href: '/admin', icon: LayoutDashboard, exact: true },
-  { title: 'İşler & Projeler', href: '/admin/jobs', icon: Briefcase },
-  { title: 'Müşteriler', href: '/admin/customers', icon: UserCheck },
-  { title: 'Kullanıcılar', href: '/admin/users', icon: Users },
-  { title: 'Ayarlar', href: '/admin/settings', icon: Settings },
+  { title: 'Kontrol Paneli', href: '/admin/dashboard', icon: LayoutDashboard, exact: true },
+  { title: 'İşler & Projeler', href: '/admin/dashboard/jobs', icon: Briefcase },
+  { title: 'Müşteriler', href: '/admin/dashboard/customers', icon: UserCheck },
+  { title: 'Kullanıcılar', href: '/admin/dashboard/users', icon: Users },
+  { title: 'Ayarlar', href: '/admin/dashboard/settings', icon: Settings },
 ];
 
 export function Sidebar() {
