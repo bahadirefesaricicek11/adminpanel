@@ -1,13 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase URL or Publishable Key');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
+import { createClient } from '@/lib/supabase/client';
 
 export interface User {
   id: string;
@@ -31,10 +22,13 @@ export interface Job {
   created_at?: string;
 }
 
+// Client-side istekleri için istemci çağrısı
+const getSupabase = () => createClient();
+
 // Fetch all users
 export async function fetchUsers(): Promise<User[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('users')
       .select('*')
       .order('created_at', { ascending: false });
@@ -50,7 +44,7 @@ export async function fetchUsers(): Promise<User[]> {
 // Fetch all jobs
 export async function fetchJobs(): Promise<Job[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('jobs')
       .select('*')
       .order('created_at', { ascending: false });
@@ -66,7 +60,7 @@ export async function fetchJobs(): Promise<Job[]> {
 // Create a new user
 export async function createUser(user: Omit<User, 'id' | 'created_at'>): Promise<User | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('users')
       .insert([user])
       .select();
@@ -85,7 +79,7 @@ export async function updateUser(
   updates: Partial<Omit<User, 'id' | 'created_at'>>
 ): Promise<User | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('users')
       .update(updates)
       .eq('id', id)
@@ -102,7 +96,7 @@ export async function updateUser(
 // Delete a user
 export async function deleteUser(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase.from('users').delete().eq('id', id);
+    const { error } = await getSupabase().from('users').delete().eq('id', id);
 
     if (error) throw error;
     return true;
@@ -115,7 +109,7 @@ export async function deleteUser(id: string): Promise<boolean> {
 // Create a new job
 export async function createJob(job: Omit<Job, 'id' | 'created_at' | 'progress'> & { progress?: number }): Promise<Job | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('jobs')
       .insert([job])
       .select();
@@ -134,7 +128,7 @@ export async function updateJob(
   updates: Partial<Omit<Job, 'id' | 'created_at'>>
 ): Promise<Job | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('jobs')
       .update(updates)
       .eq('id', id)
@@ -151,7 +145,7 @@ export async function updateJob(
 // Delete a job
 export async function deleteJob(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase.from('jobs').delete().eq('id', id);
+    const { error } = await getSupabase().from('jobs').delete().eq('id', id);
 
     if (error) throw error;
     return true;
@@ -164,6 +158,7 @@ export async function deleteJob(id: string): Promise<boolean> {
 // Get dashboard stats
 export async function getDashboardStats() {
   try {
+    const supabase = getSupabase();
     const [
       { count: totalUsers },
       { count: activeUsers },

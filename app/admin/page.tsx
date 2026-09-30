@@ -1,17 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatCard } from '@/components/admin/stat-card';
 import { Briefcase, DollarSign, CheckCircle, Clock } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-
-const mockJobs = [
-  { id: '1', title: 'Villa Dış Cephe Boyama', status: 'completed', budget: 45000 },
-  { id: '2', title: 'Ofis Kompleksi İç Mekan', status: 'in-progress', budget: 120000 },
-  { id: '3', title: 'Konut Daire Boyama', status: 'pending', budget: 28000 },
-  { id: '4', title: 'Mağaza Tadilatı & Rötuş', status: 'completed', budget: 15000 },
-];
+import { getDashboardStats } from '@/lib/supabase/queries';
 
 const monthlyRevenue = [
   { month: 'Ock', revenue: 32000 },
@@ -23,13 +17,29 @@ const monthlyRevenue = [
 ];
 
 export default function AdminDashboardPage() {
-  const stats = useMemo(() => {
-    const totalJobs = mockJobs.length;
-    const completed = mockJobs.filter((j) => j.status === 'completed').length;
-    const active = mockJobs.filter((j) => j.status === 'in-progress').length;
-    const totalBudget = mockJobs.reduce((acc, j) => acc + j.budget, 0);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalJobs: 0,
+    completedJobs: 0,
+    pendingJobs: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
-    return { totalJobs, completed, active, totalBudget };
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
   }, []);
 
   return (
@@ -42,7 +52,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Toplam Gelir"
-          value={`₺${stats.totalBudget.toLocaleString('tr-TR')}`}
+          value={loading ? '...' : `₺${stats.totalRevenue.toLocaleString('tr-TR')}`}
           icon={DollarSign}
           trend="up"
           trendValue="%12.5"
@@ -50,19 +60,19 @@ export default function AdminDashboardPage() {
         />
         <StatCard
           title="Toplam Proje"
-          value={stats.totalJobs}
+          value={loading ? '...' : stats.totalJobs}
           icon={Briefcase}
           description="Tüm müşteriler geneli"
         />
         <StatCard
           title="Aktif İşler"
-          value={stats.active}
+          value={loading ? '...' : stats.totalJobs - stats.completedJobs}
           icon={Clock}
           description="Devam eden projeler"
         />
         <StatCard
           title="Tamamlanan"
-          value={stats.completed}
+          value={loading ? '...' : stats.completedJobs}
           icon={CheckCircle}
           description="Başarıyla bitirildi"
         />
