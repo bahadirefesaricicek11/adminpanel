@@ -1,60 +1,37 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Briefcase, Users, UserCheck, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client'; // İstemci tarafı Supabase istemciniz
+import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-  {
-    title: 'Kontrol Paneli',
-    href: '/admin',
-    icon: LayoutDashboard,
-    exact: true,
-  },
-  {
-    title: 'İşler & Projeler',
-    href: '/admin/jobs',
-    icon: Briefcase,
-  },
-  {
-    title: 'Müşteriler',
-    href: '/admin/customers',
-    icon: UserCheck,
-  },
-  {
-    title: 'Kullanıcılar',
-    href: '/admin/users',
-    icon: Users,
-  },
-  {
-    title: 'Ayarlar',
-    href: '/admin/settings',
-    icon: Settings,
-  },
+  { title: 'Kontrol Paneli', href: '/admin', icon: LayoutDashboard, exact: true },
+  { title: 'İşler & Projeler', href: '/admin/jobs', icon: Briefcase },
+  { title: 'Müşteriler', href: '/admin/customers', icon: UserCheck },
+  { title: 'Kullanıcılar', href: '/admin/users', icon: Users },
+  { title: 'Ayarlar', href: '/admin/settings', icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
 
   const handleLogout = async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/admin/login');
-    router.refresh();
+    
+    // Hard-redirect yaparak tüm state ve çerezleri sıfırla
+    window.location.href = '/admin/login';
   };
 
   return (
     <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4">
       <div className="space-y-6">
-        {/* Brand / Logo */}
         <div className="px-3 py-2">
           <h2 className="text-xl font-bold tracking-tight text-slate-900">Yönetim Paneli</h2>
         </div>
 
-        {/* Navigation Links */}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -81,7 +58,6 @@ export function Sidebar() {
         </nav>
       </div>
 
-      {/* Footer / Logout */}
       <div className="pt-4 border-t border-slate-100">
         <button
           onClick={handleLogout}
