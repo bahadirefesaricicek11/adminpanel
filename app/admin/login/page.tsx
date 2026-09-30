@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { validateCredentials, setAuthToken, generateToken } from '@/lib/auth';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -21,16 +21,23 @@ export default function AdminLoginPage() {
     setError('');
     setIsLoading(true);
 
-    // Validate credentials
-    if (validateCredentials(email, password)) {
-      // Set auth token
-      const token = generateToken();
-      setAuthToken(token);
-      
-      // Redirect to dashboard
-      router.push('/admin');
-    } else {
-      setError('Invalid email or password');
+    try {
+      // Validate credentials
+      if (validateCredentials(email.trim(), password)) {
+        // Set auth token
+        const token = generateToken();
+        setAuthToken(token);
+        
+        // Redirect to dashboard
+        setTimeout(() => {
+          router.push('/admin');
+        }, 100);
+      } else {
+        setError('Invalid email or password. Please check your credentials.');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setIsLoading(false);
     }
   };
