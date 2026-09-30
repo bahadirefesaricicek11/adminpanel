@@ -17,9 +17,9 @@ const dashboardData = [
 ];
 
 const jobTypeData = [
-  { name: 'Interior', value: 45, color: '#3b82f6' },
-  { name: 'Exterior', value: 30, color: '#10b981' },
-  { name: 'Commercial', value: 25, color: '#f59e0b' },
+  { name: 'Interior', value: 45, color: '#1e40af' },
+  { name: 'Exterior', value: 30, color: '#06b6d4' },
+  { name: 'Commercial', value: 25, color: '#0ea5e9' },
 ];
 
 export default function AdminDashboard() {
@@ -47,21 +47,6 @@ export default function AdminDashboard() {
 
     loadStats();
   }, []);
-
-const dashboardData = [
-  { month: 'Jan', jobs: 24, revenue: 12000 },
-  { month: 'Feb', jobs: 32, revenue: 15000 },
-  { month: 'Mar', jobs: 28, revenue: 14000 },
-  { month: 'Apr', jobs: 41, revenue: 18000 },
-  { month: 'May', jobs: 35, revenue: 16500 },
-  { month: 'Jun', jobs: 48, revenue: 22000 },
-];
-
-const jobTypeData = [
-  { name: 'Interior', value: 45, color: '#3b82f6' },
-  { name: 'Exterior', value: 30, color: '#10b981' },
-  { name: 'Commercial', value: 25, color: '#f59e0b' },
-];
 
   return (
     <div className="space-y-8">
@@ -113,30 +98,34 @@ const jobTypeData = [
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Line Chart */}
-        <Card className="lg:col-span-2 p-6">
+        <Card className="lg:col-span-2 p-6 border-2 border-blue-200">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Jobs & Revenue Trend</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dashboardData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="month" stroke="#6b7280" />
+              <YAxis yAxisId="left" stroke="#6b7280" />
+              <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
+              <Tooltip contentStyle={{ backgroundColor: '#f3f4f6', border: '1px solid #d1d5db', borderRadius: '8px' }} />
               <Legend />
               <Line
                 yAxisId="left"
                 type="monotone"
                 dataKey="jobs"
-                stroke="#3b82f6"
-                strokeWidth={2}
+                stroke="#1e40af"
+                strokeWidth={3}
+                dot={{ fill: '#1e40af', r: 5 }}
+                activeDot={{ r: 7 }}
                 name="Jobs Completed"
               />
               <Line
                 yAxisId="right"
                 type="monotone"
                 dataKey="revenue"
-                stroke="#10b981"
-                strokeWidth={2}
+                stroke="#0ea5e9"
+                strokeWidth={3}
+                dot={{ fill: '#0ea5e9', r: 5 }}
+                activeDot={{ r: 7 }}
                 name="Revenue ($)"
               />
             </LineChart>
@@ -144,7 +133,7 @@ const jobTypeData = [
         </Card>
 
         {/* Pie Chart */}
-        <Card className="p-6">
+        <Card className="p-6 border-2 border-blue-200">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Job Types</h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -162,24 +151,24 @@ const jobTypeData = [
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip contentStyle={{ backgroundColor: '#f3f4f6', border: '1px solid #d1d5db', borderRadius: '8px' }} />
             </PieChart>
           </ResponsiveContainer>
         </Card>
       </div>
 
       {/* Bar Chart */}
-      <Card className="p-6">
+      <Card className="p-6 border-2 border-blue-200">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Monthly Performance</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={dashboardData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="month" stroke="#6b7280" />
+            <YAxis stroke="#6b7280" />
+            <Tooltip contentStyle={{ backgroundColor: '#f3f4f6', border: '1px solid #d1d5db' }} />
             <Legend />
-            <Bar dataKey="jobs" fill="#3b82f6" name="Jobs" />
-            <Bar dataKey="revenue" fill="#10b981" name="Revenue ($)" />
+            <Bar dataKey="jobs" fill="#1e40af" name="Jobs" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="revenue" fill="#0ea5e9" name="Revenue ($)" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Card>
