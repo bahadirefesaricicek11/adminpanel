@@ -18,8 +18,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Ignored because Server Components cannot set cookies directly.
-            // proxy.ts handles the refresh writing.
+            // Ignored in Server Components
           }
         },
       },
