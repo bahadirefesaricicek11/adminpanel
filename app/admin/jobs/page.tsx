@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/admin/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +25,35 @@ const statusConfig = {
   completed: { badge: 'default', text: '✓ Completed' },
 };
 
-export default async function JobsPage() {
-  const jobs = await fetchJobs();
+export default function JobsPage() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadJobs() {
+      try {
+        const data = await fetchJobs();
+        setJobs(data.map((job) => ({
+          ...job,
+          id: job.id,
+          title: job.title,
+          customer: job.customer,
+          type: job.type,
+          status: job.status as 'pending' | 'in-progress' | 'completed',
+          progress: job.progress || 0,
+          start_date: job.start_date || '',
+          due_date: job.due_date || '',
+          budget: job.budget || 0,
+        })));
+      } catch (error) {
+        console.error('Error loading jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadJobs();
+  }, []);
 
   const columns = [
     {
@@ -68,6 +98,14 @@ export default async function JobsPage() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <p className="text-slate-600">Loading jobs...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -105,18 +143,7 @@ export default async function JobsPage() {
 
       <DataTable
         columns={columns}
-        data={jobs.map((job) => ({
-          ...job,
-          id: job.id,
-          title: job.title,
-          customer: job.customer,
-          type: job.type,
-          status: job.status as 'pending' | 'in-progress' | 'completed',
-          progress: job.progress || 0,
-          start_date: job.start_date || '',
-          due_date: job.due_date || '',
-          budget: job.budget || 0,
-        }))}
+        data={jobs}
       />
     </div>
   );

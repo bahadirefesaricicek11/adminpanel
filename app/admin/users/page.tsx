@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/admin/data-table';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,13 +17,32 @@ interface User {
   join_date: string;
 }
 
-export default async function UsersPage() {
-  const users = await fetchUsers();
+export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDeleteUser = async (id: string) => {
-    'use server';
-    await deleteUser(id);
-  };
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const data = await fetchUsers();
+        setUsers(data.map((user) => ({
+          ...user,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status as 'active' | 'inactive',
+          join_date: user.join_date || user.created_at || '',
+        })));
+      } catch (error) {
+        console.error('Error loading users:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUsers();
+  }, []);
 
   const columns = [
     {
@@ -60,6 +82,14 @@ export default async function UsersPage() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <p className="text-slate-600">Loading users...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -93,15 +123,7 @@ export default async function UsersPage() {
 
       <DataTable
         columns={columns}
-        data={users.map((user) => ({
-          ...user,
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          status: user.status as 'active' | 'inactive',
-          join_date: user.join_date || user.created_at || '',
-        }))}
+        data={users}
       />
     </div>
   );
