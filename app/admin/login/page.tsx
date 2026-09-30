@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { validateCredentials, setAuthToken, generateToken } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/client';
 import { AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -14,7 +13,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,16 +21,21 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      if (validateCredentials(email, password)) {
-        const token = generateToken();
-        setAuthToken(token);
-        
-        setTimeout(() => {
-          router.push('/admin');
-        }, 100);
-      } else {
+      // Supabase Auth ile gerçek giriş isteği
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
         setError('Geçersiz e-posta veya şifre. Lütfen bilgilerinizi kontrol edin.');
         setIsLoading(false);
+        return;
+      }
+
+      if (data.session) {
+        // Sert yönlendirme ile önbellek ve state karmaşasını engelle
+        window.location.href = '/admin/dashboard';
       }
     } catch (err) {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
