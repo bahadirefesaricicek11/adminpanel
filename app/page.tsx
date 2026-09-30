@@ -20,6 +20,12 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <DeployButton />
               </div>
+              <Link 
+                href={"/admin"} 
+                className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Admin Panel
+              </Link>
             </div>
             {!hasEnvVars ? (
               <EnvVarWarning />
