@@ -22,31 +22,27 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      // Log what we're sending
-      console.log('Login attempt:');
-      console.log('Email:', email);
-      console.log('Password length:', password.length);
+      console.log('Giriş denemesi:');
+      console.log('E-posta:', email);
+      console.log('Şifre uzunluğu:', password.length);
       
-      // Validate credentials
       if (validateCredentials(email, password)) {
-        // Set auth token
         const token = generateToken();
         setAuthToken(token);
         
-        console.log('Login successful!');
+        console.log('Giriş başarılı!');
         
-        // Redirect to dashboard
         setTimeout(() => {
           router.push('/admin');
         }, 100);
       } else {
-        console.log('Credentials do not match');
-        setError('Invalid email or password. Please check your credentials carefully.');
+        console.log('Kimlik bilgileri eşleşmiyor');
+        setError('Geçersiz e-posta veya şifre. Lütfen bilgilerinizi kontrol edin.');
         setIsLoading(false);
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('An error occurred. Please try again.');
+      console.error('Giriş hatası:', err);
+      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       setIsLoading(false);
     }
   };
@@ -57,12 +53,12 @@ export default function AdminLoginPage() {
         <div className="p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900">PaintCo Admin</h1>
-            <p className="text-slate-600 mt-2">Management Panel</p>
+            <p className="text-slate-600 mt-2">Yönetim Paneli</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-posta</Label>
               <Input
                 id="email"
                 type="email"
@@ -75,11 +71,11 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Şifre</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter password"
+                placeholder="Şifrenizi girin"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1"
@@ -99,16 +95,16 @@ export default function AdminLoginPage() {
               className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={isLoading}
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </Button>
           </form>
 
           {/* Demo credentials info */}
           <div className="mt-6 pt-6 border-t">
-            <p className="text-xs text-slate-600 mb-2 font-semibold">Demo Credentials:</p>
+            <p className="text-xs text-slate-600 mb-2 font-semibold">Demo Kimlik Bilgileri:</p>
             <div className="space-y-1 text-xs text-slate-600 bg-slate-50 p-3 rounded">
-              <p><span className="font-semibold">Email:</span> bahadirefesaricicek11@gmail.com</p>
-              <p><span className="font-semibold">Password:</span> adminpaneltestcode123</p>
+              <p><span className="font-semibold">E-posta:</span> bahadirefesaricicek11@gmail.com</p>
+              <p><span className="font-semibold">Şifre:</span> adminpaneltestcode123</p>
             </div>
           </div>
         </div>

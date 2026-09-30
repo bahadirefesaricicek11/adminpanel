@@ -35,7 +35,7 @@ export default function UsersPage() {
           join_date: user.join_date || user.created_at || '',
         })));
       } catch (error) {
-        console.error('Error loading users:', error);
+        console.error('Kullanıcılar yüklenirken hata oluştu:', error);
       } finally {
         setLoading(false);
       }
@@ -46,38 +46,38 @@ export default function UsersPage() {
 
   const columns = [
     {
-      header: 'Name',
+      header: 'Ad Soyad',
       accessor: 'name' as const,
     },
     {
-      header: 'Email',
+      header: 'E-posta',
       accessor: 'email' as const,
     },
     {
-      header: 'Role',
+      header: 'Rol',
       accessor: 'role' as const,
       cell: (value: string) => (
         <Badge variant="outline">{value}</Badge>
       ),
     },
     {
-      header: 'Status',
+      header: 'Durum',
       accessor: 'status' as const,
       cell: (value: string) => (
         <Badge
           variant={value === 'active' ? 'default' : 'secondary'}
           className={value === 'active' ? 'bg-green-100 text-green-800' : ''}
         >
-          {value === 'active' ? '✓ Active' : 'Inactive'}
+          {value === 'active' ? '✓ Aktif' : 'Pasif'}
         </Badge>
       ),
     },
     {
-      header: 'Join Date',
+      header: 'Katılım Tarihi',
       accessor: 'join_date' as const,
       cell: (value: string) => {
-        if (!value) return 'N/A';
-        return new Date(value).toLocaleDateString();
+        if (!value) return 'Bilinmiyor';
+        return new Date(value).toLocaleDateString('tr-TR');
       },
     },
   ];
@@ -85,7 +85,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-slate-600">Loading users...</p>
+        <p className="text-slate-600">Kullanıcılar yükleniyor...</p>
       </div>
     );
   }
@@ -94,12 +94,12 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Users</h1>
-          <p className="text-slate-600 mt-1">Manage your team members</p>
+          <h1 className="text-3xl font-bold text-slate-900">Kullanıcılar</h1>
+          <p className="text-slate-600 mt-1">Ekip üyelerinizi yönetin</p>
         </div>
         <Button className="gap-2">
           <Plus size={20} />
-          Add User
+          Kullanıcı Ekle
         </Button>
       </div>
 
@@ -107,17 +107,17 @@ export default function UsersPage() {
         <div className="flex-1">
           <input
             type="search"
-            placeholder="Search by name or email..."
+            placeholder="İsim veya e-posta ile ara..."
             className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <select className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="painter">Painter</option>
-          <option value="manager">Project Manager</option>
-          <option value="coordinator">Coordinator</option>
-          <option value="inspector">Quality Inspector</option>
+          <option value="">Tüm Roller</option>
+          <option value="admin">Yönetici</option>
+          <option value="painter">Boya Ustası</option>
+          <option value="manager">Proje Yöneticisi</option>
+          <option value="coordinator">Koordinatör</option>
+          <option value="inspector">Kalite Kontrolör</option>
         </select>
       </div>
 

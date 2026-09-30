@@ -20,9 +20,9 @@ interface Job {
 }
 
 const statusConfig = {
-  pending: { badge: 'outline', text: '⏳ Pending' },
-  'in-progress': { badge: 'default', text: '🔄 In Progress' },
-  completed: { badge: 'default', text: '✓ Completed' },
+  pending: { badge: 'outline', text: '⏳ Beklemede' },
+  'in-progress': { badge: 'default', text: '🔄 Devam Ediyor' },
+  completed: { badge: 'default', text: '✓ Tamamlandı' },
 };
 
 export default function JobsPage() {
@@ -46,7 +46,7 @@ export default function JobsPage() {
           budget: job.budget || 0,
         })));
       } catch (error) {
-        console.error('Error loading jobs:', error);
+        console.error('İşler yüklenirken hata oluştu:', error);
       } finally {
         setLoading(false);
       }
@@ -57,22 +57,22 @@ export default function JobsPage() {
 
   const columns = [
     {
-      header: 'Job Title',
+      header: 'İş Başlığı',
       accessor: 'title' as const,
     },
     {
-      header: 'Customer',
+      header: 'Müşteri',
       accessor: 'customer' as const,
     },
     {
-      header: 'Type',
+      header: 'Tür',
       accessor: 'type' as const,
       cell: (value: string) => (
         <Badge variant="outline">{value}</Badge>
       ),
     },
     {
-      header: 'Status',
+      header: 'Durum',
       accessor: 'status' as const,
       cell: (value: string) => {
         const config = statusConfig[value as keyof typeof statusConfig];
@@ -80,7 +80,7 @@ export default function JobsPage() {
       },
     },
     {
-      header: 'Progress',
+      header: 'İlerleme',
       accessor: 'progress' as const,
       cell: (value: number) => (
         <div className="w-full bg-slate-200 rounded-full h-2">
@@ -92,16 +92,16 @@ export default function JobsPage() {
       ),
     },
     {
-      header: 'Budget',
+      header: 'Bütçe',
       accessor: 'budget' as const,
-      cell: (value: number) => `$${value?.toLocaleString() || 0}`,
+      cell: (value: number) => `₺${value?.toLocaleString('tr-TR') || 0}`,
     },
   ];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-slate-600">Loading jobs...</p>
+        <p className="text-slate-600">İşler yükleniyor...</p>
       </div>
     );
   }
@@ -110,12 +110,12 @@ export default function JobsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Jobs</h1>
-          <p className="text-slate-600 mt-1">Manage all painting projects</p>
+          <h1 className="text-3xl font-bold text-slate-900">İşler</h1>
+          <p className="text-slate-600 mt-1">Tüm boya projelerini yönetin</p>
         </div>
         <Button className="gap-2">
           <Plus size={20} />
-          New Job
+          Yeni İş
         </Button>
       </div>
 
@@ -123,21 +123,21 @@ export default function JobsPage() {
         <div className="flex-1">
           <input
             type="search"
-            placeholder="Search by job title or customer..."
+            placeholder="İş başlığı veya müşteri adı ile ara..."
             className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <select className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
+          <option value="">Tüm Durumlar</option>
+          <option value="pending">Beklemede</option>
+          <option value="in-progress">Devam Ediyor</option>
+          <option value="completed">Tamamlandı</option>
         </select>
         <select className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">All Types</option>
-          <option value="interior">Interior</option>
-          <option value="exterior">Exterior</option>
-          <option value="commercial">Commercial</option>
+          <option value="">Tüm Türler</option>
+          <option value="interior">İç Mekan</option>
+          <option value="exterior">Dış Mekan</option>
+          <option value="commercial">Ticari</option>
         </select>
       </div>
 
