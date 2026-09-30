@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Briefcase, Users, UserCheck, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client'; // İstemci tarafı Supabase istemciniz
 
 const navItems = [
   {
@@ -36,6 +37,14 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+    router.refresh();
+  };
 
   return (
     <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4">
@@ -75,9 +84,7 @@ export function Sidebar() {
       {/* Footer / Logout */}
       <div className="pt-4 border-t border-slate-100">
         <button
-          onClick={() => {
-            /* Çıkış yap mantığı */
-          }}
+          onClick={handleLogout}
           className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
         >
           <LogOut size={18} />
