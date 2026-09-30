@@ -29,14 +29,14 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Re-evaluate session & refresh expired tokens
+  // Refresh user session on every request
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
-  // Protect /admin routes (except login)
+  // Protect all /admin paths except /admin/login
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     if (!user) {
       const loginUrl = new URL('/admin/login', request.url);
