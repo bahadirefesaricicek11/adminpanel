@@ -1,10 +1,10 @@
-'use client';
+'use server';
 
-import { useState } from 'react';
 import { DataTable } from '@/components/admin/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
+import { fetchJobs, deleteJob } from '@/lib/supabase/queries';
 
 interface Job {
   id: string;
@@ -13,68 +13,10 @@ interface Job {
   type: string;
   status: 'pending' | 'in-progress' | 'completed';
   progress: number;
-  startDate: string;
-  dueDate: string;
+  start_date: string;
+  due_date: string;
   budget: number;
 }
-
-const mockJobs: Job[] = [
-  {
-    id: '1',
-    title: 'Living Room Repaint',
-    customer: 'John Smith',
-    type: 'Interior',
-    status: 'in-progress',
-    progress: 75,
-    startDate: '2024-06-01',
-    dueDate: '2024-06-15',
-    budget: 2500,
-  },
-  {
-    id: '2',
-    title: 'Office Building Exterior',
-    customer: 'Tech Corp',
-    type: 'Commercial',
-    status: 'in-progress',
-    progress: 45,
-    startDate: '2024-05-20',
-    dueDate: '2024-07-10',
-    budget: 15000,
-  },
-  {
-    id: '3',
-    title: 'Bedroom Makeover',
-    customer: 'Emily Johnson',
-    type: 'Interior',
-    status: 'completed',
-    progress: 100,
-    startDate: '2024-05-10',
-    dueDate: '2024-05-25',
-    budget: 1800,
-  },
-  {
-    id: '4',
-    title: 'House Exterior Paint',
-    customer: 'Robert Williams',
-    type: 'Exterior',
-    status: 'pending',
-    progress: 0,
-    startDate: '2024-06-20',
-    dueDate: '2024-07-05',
-    budget: 4500,
-  },
-  {
-    id: '5',
-    title: 'Restaurant Renovation',
-    customer: 'Taste Buds Restaurant',
-    type: 'Commercial',
-    status: 'in-progress',
-    progress: 60,
-    startDate: '2024-05-15',
-    dueDate: '2024-06-30',
-    budget: 8000,
-  },
-];
 
 const statusConfig = {
   pending: { badge: 'outline', text: '⏳ Pending' },
@@ -82,22 +24,8 @@ const statusConfig = {
   completed: { badge: 'default', text: '✓ Completed' },
 };
 
-export default function JobsPage() {
-  const [jobs, setJobs] = useState(mockJobs);
-
-  const handleEdit = (job: Job) => {
-    console.log('Edit job:', job);
-    alert(`Edit functionality for ${job.title}`);
-  };
-
-  const handleDelete = (job: Job) => {
-    setJobs(jobs.filter((j) => j.id !== job.id));
-    alert(`Job ${job.title} deleted`);
-  };
-
-  const handleAddJob = () => {
-    alert('Add job functionality');
-  };
+export default async function JobsPage() {
+  const jobs = await fetchJobs();
 
   const columns = [
     {
@@ -138,7 +66,7 @@ export default function JobsPage() {
     {
       header: 'Budget',
       accessor: 'budget' as const,
-      cell: (value: number) => `$${value.toLocaleString()}`,
+      cell: (value: number) => `$${value?.toLocaleString() || 0}`,
     },
   ];
 
@@ -149,7 +77,7 @@ export default function JobsPage() {
           <h1 className="text-3xl font-bold text-slate-900">Jobs</h1>
           <p className="text-slate-600 mt-1">Manage all painting projects</p>
         </div>
-        <Button onClick={handleAddJob} className="gap-2">
+        <Button className="gap-2">
           <Plus size={20} />
           New Job
         </Button>
@@ -179,9 +107,18 @@ export default function JobsPage() {
 
       <DataTable
         columns={columns}
-        data={jobs}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        data={jobs.map((job) => ({
+          ...job,
+          id: job.id,
+          title: job.title,
+          customer: job.customer,
+          type: job.type,
+          status: job.status as 'pending' | 'in-progress' | 'completed',
+          progress: job.progress || 0,
+          start_date: job.start_date || '',
+          due_date: job.due_date || '',
+          budget: job.budget || 0,
+        }))}
       />
     </div>
   );

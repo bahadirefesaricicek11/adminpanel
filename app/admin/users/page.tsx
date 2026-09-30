@@ -1,11 +1,11 @@
-'use client';
+'use server';
 
-import { useState } from 'react';
 import { DataTable } from '@/components/admin/data-table';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
+import { fetchUsers, deleteUser } from '@/lib/supabase/queries';
 
 interface User {
   id: string;
@@ -13,91 +13,15 @@ interface User {
   email: string;
   role: string;
   status: 'active' | 'inactive';
-  joinDate: string;
+  join_date: string;
 }
 
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Rodriguez',
-    email: 'john@paintco.com',
-    role: 'Painter',
-    status: 'active',
-    joinDate: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@paintco.com',
-    role: 'Project Manager',
-    status: 'active',
-    joinDate: '2024-02-20',
-  },
-  {
-    id: '3',
-    name: 'Mike Chen',
-    email: 'mike@paintco.com',
-    role: 'Painter',
-    status: 'active',
-    joinDate: '2024-03-10',
-  },
-  {
-    id: '4',
-    name: 'Lisa Anderson',
-    email: 'lisa@paintco.com',
-    role: 'Admin',
-    status: 'active',
-    joinDate: '2023-12-01',
-  },
-  {
-    id: '5',
-    name: 'David Brown',
-    email: 'david@paintco.com',
-    role: 'Painter',
-    status: 'inactive',
-    joinDate: '2024-01-05',
-  },
-  {
-    id: '6',
-    name: 'Emma Wilson',
-    email: 'emma@paintco.com',
-    role: 'Coordinator',
-    status: 'active',
-    joinDate: '2024-04-12',
-  },
-  {
-    id: '7',
-    name: 'James Taylor',
-    email: 'james@paintco.com',
-    role: 'Painter',
-    status: 'active',
-    joinDate: '2024-02-28',
-  },
-  {
-    id: '8',
-    name: 'Rachel Lee',
-    email: 'rachel@paintco.com',
-    role: 'Quality Inspector',
-    status: 'active',
-    joinDate: '2024-03-22',
-  },
-];
+export default async function UsersPage() {
+  const users = await fetchUsers();
 
-export default function UsersPage() {
-  const [users, setUsers] = useState(mockUsers);
-
-  const handleEdit = (user: User) => {
-    console.log('Edit user:', user);
-    alert(`Edit functionality for ${user.name}`);
-  };
-
-  const handleDelete = (user: User) => {
-    setUsers(users.filter((u) => u.id !== user.id));
-    alert(`User ${user.name} deleted`);
-  };
-
-  const handleAddUser = () => {
-    alert('Add user functionality');
+  const handleDeleteUser = async (id: string) => {
+    'use server';
+    await deleteUser(id);
   };
 
   const columns = [
@@ -130,8 +54,11 @@ export default function UsersPage() {
     },
     {
       header: 'Join Date',
-      accessor: 'joinDate' as const,
-      cell: (value: string) => new Date(value).toLocaleDateString(),
+      accessor: 'join_date' as const,
+      cell: (value: string) => {
+        if (!value) return 'N/A';
+        return new Date(value).toLocaleDateString();
+      },
     },
   ];
 
@@ -142,7 +69,7 @@ export default function UsersPage() {
           <h1 className="text-3xl font-bold text-slate-900">Users</h1>
           <p className="text-slate-600 mt-1">Manage your team members</p>
         </div>
-        <Button onClick={handleAddUser} className="gap-2">
+        <Button className="gap-2">
           <Plus size={20} />
           Add User
         </Button>
@@ -168,9 +95,15 @@ export default function UsersPage() {
 
       <DataTable
         columns={columns}
-        data={users}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        data={users.map((user) => ({
+          ...user,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status as 'active' | 'inactive',
+          join_date: user.join_date || user.created_at || '',
+        }))}
       />
     </div>
   );

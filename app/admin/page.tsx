@@ -1,9 +1,10 @@
-'use client';
+'use server';
 
 import { StatCard } from '@/components/admin/stat-card';
 import { Card } from '@/components/ui/card';
 import { BarChart3, Users, Briefcase, DollarSign, TrendingUp } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { getDashboardStats } from '@/lib/supabase/queries';
 
 const dashboardData = [
   { month: 'Jan', jobs: 24, revenue: 12000 },
@@ -20,7 +21,9 @@ const jobTypeData = [
   { name: 'Commercial', value: 25, color: '#f59e0b' },
 ];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const stats = await getDashboardStats();
+
   return (
     <div className="space-y-8">
       <div>
@@ -32,8 +35,8 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Jobs"
-          value="243"
-          description="Completed this year"
+          value={stats.totalJobs}
+          description={`${stats.completedJobs} completed`}
           icon={Briefcase}
           trend="up"
           trendValue="12% from last month"
@@ -41,8 +44,8 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Active Users"
-          value="48"
-          description="Team members"
+          value={stats.activeUsers}
+          description={`of ${stats.totalUsers} team members`}
           icon={Users}
           trend="up"
           trendValue="3 new this month"
@@ -50,7 +53,7 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Revenue"
-          value="$156.5k"
+          value={`$${(stats.totalRevenue / 1000).toFixed(1)}k`}
           description="Total earnings"
           icon={DollarSign}
           trend="up"
@@ -59,7 +62,7 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Pending Jobs"
-          value="12"
+          value={stats.pendingJobs}
           description="Awaiting completion"
           icon={TrendingUp}
           trend="down"
