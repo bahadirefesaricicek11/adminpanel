@@ -9,8 +9,30 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status?: string;
+  created_at?: string;
+}
+
+export interface Job {
+  id: string;
+  title: string;
+  customer: string;
+  type: string;
+  status: 'pending' | 'in-progress' | 'completed';
+  progress: number;
+  start_date?: string;
+  due_date?: string;
+  budget: number;
+  created_at?: string;
+}
+
 // Fetch all users
-export async function fetchUsers() {
+export async function fetchUsers(): Promise<User[]> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -26,7 +48,7 @@ export async function fetchUsers() {
 }
 
 // Fetch all jobs
-export async function fetchJobs() {
+export async function fetchJobs(): Promise<Job[]> {
   try {
     const { data, error } = await supabase
       .from('jobs')
@@ -42,11 +64,7 @@ export async function fetchJobs() {
 }
 
 // Create a new user
-export async function createUser(user: {
-  name: string;
-  email: string;
-  role: string;
-}) {
+export async function createUser(user: Omit<User, 'id' | 'created_at'>): Promise<User | null> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -64,8 +82,8 @@ export async function createUser(user: {
 // Update a user
 export async function updateUser(
   id: string,
-  updates: Partial<{ name: string; email: string; role: string; status: string }>
-) {
+  updates: Partial<Omit<User, 'id' | 'created_at'>>
+): Promise<User | null> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -82,7 +100,7 @@ export async function updateUser(
 }
 
 // Delete a user
-export async function deleteUser(id: string) {
+export async function deleteUser(id: string): Promise<boolean> {
   try {
     const { error } = await supabase.from('users').delete().eq('id', id);
 
@@ -95,13 +113,7 @@ export async function deleteUser(id: string) {
 }
 
 // Create a new job
-export async function createJob(job: {
-  title: string;
-  customer: string;
-  type: string;
-  status?: string;
-  budget: number;
-}) {
+export async function createJob(job: Omit<Job, 'id' | 'created_at' | 'progress'> & { progress?: number }): Promise<Job | null> {
   try {
     const { data, error } = await supabase
       .from('jobs')
@@ -119,15 +131,8 @@ export async function createJob(job: {
 // Update a job
 export async function updateJob(
   id: string,
-  updates: Partial<{
-    title: string;
-    customer: string;
-    type: string;
-    status: string;
-    progress: number;
-    budget: number;
-  }>
-) {
+  updates: Partial<Omit<Job, 'id' | 'created_at'>>
+): Promise<Job | null> {
   try {
     const { data, error } = await supabase
       .from('jobs')
@@ -144,7 +149,7 @@ export async function updateJob(
 }
 
 // Delete a job
-export async function deleteJob(id: string) {
+export async function deleteJob(id: string): Promise<boolean> {
   try {
     const { error } = await supabase.from('jobs').delete().eq('id', id);
 
@@ -159,21 +164,31 @@ export async function deleteJob(id: string) {
 // Get dashboard stats
 export async function getDashboardStats() {
   try {
-    const [usersData, jobsData] = await Promise.all([
-      supabase.from('users').select('*'),
-      supabase.from('jobs').select('*'),
+    const [
+      { count: totalUsers },
+      { count: activeUsers },
+      { count: totalJobs },
+      { count: completedJobs },
+      { count: pendingJobs },
+      { data: revenueData }
+    ] = await Promise.all([
+      supabase.from('users').select('*', { count: 'exact', head: true }),
+      supabase.from('users').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+      supabase.from('jobs').select('*', { count: 'exact', head: true }),
+      supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
+      supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('jobs').select('budget'),
     ]);
 
-    const users = usersData.data || [];
-    const jobs = jobsData.data || [];
+    const totalRevenue = revenueData?.reduce((sum, j) => sum + (j.budget || 0), 0) || 0;
 
     return {
-      totalUsers: users.length,
-      activeUsers: users.filter((u) => u.status === 'active').length,
-      totalJobs: jobs.length,
-      completedJobs: jobs.filter((j) => j.status === 'completed').length,
-      pendingJobs: jobs.filter((j) => j.status === 'pending').length,
-      totalRevenue: jobs.reduce((sum, j) => sum + (j.budget || 0), 0),
+      totalUsers: totalUsers || 0,
+      activeUsers: activeUsers || 0,
+      totalJobs: totalJobs || 0,
+      completedJobs: completedJobs || 0,
+      pendingJobs: pendingJobs || 0,
+      totalRevenue,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);

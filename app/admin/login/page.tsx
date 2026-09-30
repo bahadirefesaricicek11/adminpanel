@@ -22,89 +22,80 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      console.log('Giriş denemesi:');
-      console.log('E-posta:', email);
-      console.log('Şifre uzunluğu:', password.length);
-      
       if (validateCredentials(email, password)) {
         const token = generateToken();
         setAuthToken(token);
-        
-        console.log('Giriş başarılı!');
         
         setTimeout(() => {
           router.push('/admin');
         }, 100);
       } else {
-        console.log('Kimlik bilgileri eşleşmiyor');
         setError('Geçersiz e-posta veya şifre. Lütfen bilgilerinizi kontrol edin.');
         setIsLoading(false);
       }
     } catch (err) {
-      console.error('Giriş hatası:', err);
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border border-slate-200/80 shadow-sm bg-white">
         <div className="p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900">PaintCo Admin</h1>
-            <p className="text-slate-600 mt-2">Yönetim Paneli</p>
+            <p className="text-slate-500 mt-2 text-sm">Yönetim Paneli Girişi</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">E-posta</Label>
+              <Label htmlFor="email" className="text-slate-700">E-posta</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1"
+                className="mt-1 border-slate-200"
                 disabled={isLoading}
               />
             </div>
 
             <div>
-              <Label htmlFor="password">Şifre</Label>
+              <Label htmlFor="password" className="text-slate-700">Şifre</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Şifrenizi girin"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
+                className="mt-1 border-slate-200"
                 disabled={isLoading}
               />
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
-                <AlertCircle className="text-red-600 flex-shrink-0" size={18} />
-                <p className="text-sm text-red-800">{error}</p>
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg flex gap-2">
+                <AlertCircle className="text-rose-600 flex-shrink-0" size={18} />
+                <p className="text-sm text-rose-800">{error}</p>
               </div>
             )}
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
               disabled={isLoading}
             >
               {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </Button>
           </form>
 
-          {/* Demo credentials info */}
-          <div className="mt-6 pt-6 border-t">
-            <p className="text-xs text-slate-600 mb-2 font-semibold">Demo Kimlik Bilgileri:</p>
-            <div className="space-y-1 text-xs text-slate-600 bg-slate-50 p-3 rounded">
-              <p><span className="font-semibold">E-posta:</span> bahadirefesaricicek11@gmail.com</p>
-              <p><span className="font-semibold">Şifre:</span> adminpaneltestcode123</p>
+          <div className="mt-6 pt-6 border-t border-slate-100">
+            <p className="text-xs text-slate-500 mb-2 font-medium">Demo Kimlik Bilgileri:</p>
+            <div className="space-y-1 text-xs text-slate-600 bg-slate-50 border border-slate-200/60 p-3 rounded-lg">
+              <p><span className="font-semibold text-slate-700">E-posta:</span> bahadirefesaricicek11@gmail.com</p>
+              <p><span className="font-semibold text-slate-700">Şifre:</span> adminpaneltestcode123</p>
             </div>
           </div>
         </div>
