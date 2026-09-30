@@ -10,7 +10,6 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const supabase = createClient();
 
-  // Login sayfasındaysak korumayı ve yönlendirmeyi tamamen devre dışı bırak
   const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
@@ -23,6 +22,7 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
+        // Eğer kullanıcı yoksa ve zaten login sayfasında değilsek yönlendir
         window.location.href = '/admin/login';
       } else {
         setAuthenticated(true);
@@ -31,17 +31,7 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
     };
 
     checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT' && !isLoginPage) {
-        window.location.href = '/admin/login';
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [isLoginPage]);
+  }, [pathname, isLoginPage, supabase]);
 
   if (isLoginPage) {
     return <>{children}</>;
