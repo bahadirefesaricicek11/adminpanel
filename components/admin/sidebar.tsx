@@ -1,62 +1,84 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { BarChart3, Users, Briefcase, Settings, LogOut } from 'lucide-react';
-import { clearAuthToken } from '@/lib/auth';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, Briefcase, Users, UserCheck, Settings, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  {
+    title: 'Kontrol Paneli',
+    href: '/admin',
+    icon: LayoutDashboard,
+    exact: true,
+  },
+  {
+    title: 'İşler & Projeler',
+    href: '/admin/jobs',
+    icon: Briefcase,
+  },
+  {
+    title: 'Müşteriler',
+    href: '/admin/customers',
+    icon: UserCheck,
+  },
+  {
+    title: 'Kullanıcılar',
+    href: '/admin/users',
+    icon: Users,
+  },
+  {
+    title: 'Ayarlar',
+    href: '/admin/settings',
+    icon: Settings,
+  },
+];
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    clearAuthToken();
-    router.push('/admin/login');
-  };
-
-  const navItems = [
-    { href: '/admin', icon: BarChart3, label: 'Kontrol Paneli', exact: true },
-    { href: '/admin/users', icon: Users, label: 'Kullanıcılar' },
-    { href: '/admin/jobs', icon: Briefcase, label: 'İşler' },
-    { href: '/admin/settings', icon: Settings, label: 'Ayarlar' },
-  ];
 
   return (
-    <aside className="w-64 border-r border-slate-200/80 bg-white min-h-screen p-6 flex flex-col justify-between">
-      <div>
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">PaintCo Admin</h1>
-          <p className="text-sm text-slate-500">Yönetim Paneli</p>
+    <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4">
+      <div className="space-y-6">
+        {/* Brand / Logo */}
+        <div className="px-3 py-2">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900">Yönetim Paneli</h2>
         </div>
 
-        <nav className="space-y-1.5">
+        {/* Navigation Links */}
+        <nav className="space-y-1">
           {navItems.map((item) => {
-            const isActive =
-              item.exact ? pathname === item.href : pathname.startsWith(item.href);
             const Icon = item.icon;
+            const isActive = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
-                }`}
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                )}
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
+                <Icon size={18} className={isActive ? 'text-blue-600' : 'text-slate-400'} />
+                <span>{item.title}</span>
               </Link>
             );
           })}
         </nav>
       </div>
 
-      <div className="pt-6 border-t border-slate-200/80">
+      {/* Footer / Logout */}
+      <div className="pt-4 border-t border-slate-100">
         <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors rounded-lg"
+          onClick={() => {
+            /* Çıkış yap mantığı */
+          }}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
         >
           <LogOut size={18} />
           <span>Çıkış Yap</span>
