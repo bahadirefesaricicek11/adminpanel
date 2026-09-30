@@ -20,7 +20,7 @@ export function AddUserModal({ isOpen, onClose, onSuccess }: AddUserModalProps) 
     name: '',
     email: '',
     role: 'Boya Ustası',
-    status: 'active',
+    status: 'active' as 'active' | 'inactive',
   });
 
   if (!isOpen) return null;
@@ -31,9 +31,12 @@ export function AddUserModal({ isOpen, onClose, onSuccess }: AddUserModalProps) 
     setError('');
 
     try {
+      // Pass formData directly to match the User table schema expected by Supabase queries
       const createdUser = await createUser({
-        ...formData,
-        join_date: new Date().toISOString(),
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        status: formData.status,
       });
 
       onSuccess(createdUser);

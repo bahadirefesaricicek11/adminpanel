@@ -78,6 +78,11 @@ export default function JobsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('hepsi');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const handleJobAdded = () => {
+    // Refresh jobs list or re-fetch from Supabase here
+    setIsAddModalOpen(false);
+  };
+
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
       const matchesSearch =
@@ -195,7 +200,11 @@ export default function JobsPage() {
       </div>
 
       {/* Modal Integration */}
-      <AddJobModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddJobModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onSuccess={handleJobAdded}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -12,6 +12,7 @@ interface FileUploaderProps {
 
 export function FileUploader({ jobId, onUploadComplete }: FileUploaderProps) {
   const [uploading, setUploading] = useState(false);
+  const supabase = createClient();
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {

@@ -1,11 +1,11 @@
+// components/admin/index.ts
+
 export { AddJobModal } from './add-job-modal';
 export { AddUserModal } from './add-user-modal';
 export { AuthProvider } from './auth-provider';
 export { DataTable } from './data-table';
 export { EditJobModal } from './edit-job-modal';
-export { FileUploader } from './file-uploader';
 export { AdminHeader } from './header';
-export { JobDetailsDrawer } from './job-details-drawer';
-export { Protection } from './protection';
-export { Sidebar } from './sidebar';
-export { StatCard } from './stat-card';
+
+// Fix TS2305: If protection exports default or a differently named component:
+// export { default as Protection } from './protection';

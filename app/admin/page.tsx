@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatCard } from '@/components/admin/stat-card';
-import { Briefcase, DollarSign, CheckCircle, Clock, TrendingUp } from 'lucide-react';
+import { Briefcase, DollarSign, CheckCircle, Clock } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 const mockJobs = [
@@ -43,25 +43,27 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Toplam Gelir"
           value={`₺${stats.totalBudget.toLocaleString('tr-TR')}`}
-          icon={<DollarSign className="w-4 h-4 text-emerald-600" />}
-          description="Geçen aya göre +%12.5"
+          icon={DollarSign}
+          trend="up"
+          trendValue="%12.5"
+          description="Geçen aya göre"
         />
         <StatCard
           title="Toplam Proje"
-          value={stats.totalJobs.toString()}
-          icon={<Briefcase className="w-4 h-4 text-blue-600" />}
+          value={stats.totalJobs}
+          icon={Briefcase}
           description="Tüm müşteriler geneli"
         />
         <StatCard
           title="Aktif İşler"
-          value={stats.active.toString()}
-          icon={<Clock className="w-4 h-4 text-amber-600" />}
+          value={stats.active}
+          icon={Clock}
           description="Devam eden projeler"
         />
         <StatCard
           title="Tamamlanan"
-          value={stats.completed.toString()}
-          icon={<CheckCircle className="w-4 h-4 text-emerald-600" />}
+          value={stats.completed}
+          icon={CheckCircle}
           description="Başarıyla bitirildi"
         />
       </div>
