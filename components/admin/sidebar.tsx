@@ -3,14 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useCallback } from 'react';
-import { LayoutDashboard, Briefcase, Users, UserCheck, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
 const NAV_ITEMS = [
   { title: 'Kontrol Paneli', href: '/admin/dashboard', icon: LayoutDashboard, exact: true },
-  { title: 'İşler & Projeler', href: '/admin/dashboard/jobs', icon: Briefcase },
-  { title: 'Müşteriler', href: '/admin/dashboard/customers', icon: UserCheck },
+  { title: 'Website İçeriği', href: '/admin/dashboard/content', icon: FileText },
   { title: 'Kullanıcılar', href: '/admin/dashboard/users', icon: Users },
   { title: 'Ayarlar', href: '/admin/dashboard/settings', icon: Settings },
 ];

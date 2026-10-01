@@ -14,8 +14,7 @@ export const translations = {
   },
   nav: {
     dashboard: 'Kontrol Paneli',
-    jobs: 'İşler & Projeler',
-    customers: 'Müşteriler',
+    content: 'Website İçeriği',
     users: 'Kullanıcılar',
     settings: 'Ayarlar',
     adminPanel: 'Yönetim Paneli',
