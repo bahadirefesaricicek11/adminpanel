@@ -6,6 +6,7 @@ import { StatCard } from '@/components/admin/stat-card';
 import { Briefcase, DollarSign, CheckCircle, Clock } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { getDashboardStats } from '@/lib/supabase/queries';
+import { translations } from '@/lib/translations';
 
 const monthlyRevenue = [
   { month: 'Ock', revenue: 32000 },
@@ -45,51 +46,51 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Kontrol Paneli</h1>
-        <p className="text-sm text-slate-500">Genel performans metrikleri ve gelir istatistikleri</p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{translations.dashboard.title}</h1>
+        <p className="text-sm text-slate-600 mt-1">{translations.dashboard.subtitle}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
-          title="Toplam Gelir"
+          title={translations.dashboard.totalRevenue}
           value={loading ? '...' : `₺${stats.totalRevenue.toLocaleString('tr-TR')}`}
           icon={DollarSign}
           trend="up"
           trendValue="%12.5"
-          description="Geçen aya göre"
+          description={translations.dashboard.lastMonth}
         />
         <StatCard
-          title="Toplam Proje"
+          title={translations.dashboard.totalJobs}
           value={loading ? '...' : stats.totalJobs}
           icon={Briefcase}
-          description="Tüm müşteriler geneli"
+          description={translations.dashboard.allCustomers}
         />
         <StatCard
-          title="Aktif İşler"
+          title={translations.dashboard.activeJobs}
           value={loading ? '...' : stats.totalJobs - stats.completedJobs}
           icon={Clock}
-          description="Devam eden projeler"
+          description={translations.dashboard.ongoingProjects}
         />
         <StatCard
-          title="Tamamlanan"
+          title={translations.dashboard.completedJobs}
           value={loading ? '...' : stats.completedJobs}
           icon={CheckCircle}
-          description="Başarıyla bitirildi"
+          description={translations.dashboard.successfullyCompleted}
         />
       </div>
 
-      <Card className="bg-white border-slate-200">
+      <Card className="bg-white border-slate-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-bold text-slate-900">Aylık Gelir Dağılımı</CardTitle>
+          <CardTitle className="text-lg font-bold text-slate-900">{translations.dashboard.monthlyRevenue}</CardTitle>
         </CardHeader>
-        <CardContent className="h-72 pt-4">
+        <CardContent className="h-80 pt-4">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
               <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
               <Tooltip formatter={(value) => [`₺${Number(value).toLocaleString('tr-TR')}`, 'Gelir']} />
-              <Bar dataKey="revenue" fill="#2563eb" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" fill="#2563eb" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

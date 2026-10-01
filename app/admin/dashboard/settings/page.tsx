@@ -7,10 +7,10 @@ import { Label } from '@/components/ui/label';
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-slate-50/60 p-6 space-y-6">
-      <div className="pb-4 border-b border-slate-200/80">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Ayarlar</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Yönetim paneli ayarlarınızı yönetin</p>
+    <div className="space-y-6">
+      <div className="pb-4 border-b border-slate-200">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Ayarlar</h1>
+        <p className="text-slate-600 text-sm mt-1">Yönetim paneli ayarlarınızı yönetin</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
