@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Sidebar } from './sidebar';
 import { AdminHeader } from './header';
+import { useSessionTimeout, SessionWarning } from '@/lib/hooks/useSessionTimeout';
 
 export function AdminProtection({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
+  const { extendSession } = useSessionTimeout();
 
   const isLoginPage = pathname === '/admin/login';
 
@@ -47,14 +49,17 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Admin pages - with sidebar
+  // Admin pages - with sidebar and session monitoring
   return (
-    <div className="flex h-screen bg-slate-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <AdminHeader />
-        <main className="flex-1 overflow-auto p-8 bg-slate-50">{children}</main>
+    <>
+      <SessionWarning />
+      <div className="flex h-screen bg-slate-50">
+        <Sidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AdminHeader />
+          <main className="flex-1 overflow-auto p-8 bg-slate-50">{children}</main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

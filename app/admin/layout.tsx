@@ -1,4 +1,5 @@
 import { AdminProtection } from '@/components/admin/protection';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function AdminLayout({
   children,
@@ -6,8 +7,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AdminProtection>
-      {children}
-    </AdminProtection>
+    <ErrorBoundary>
+      <AdminProtection>
+        {children}
+      </AdminProtection>
+    </ErrorBoundary>
   );
 }

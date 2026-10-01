@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
-import { AlertCircle, Lock } from 'lucide-react';
+import { AlertCircle, Lock, CheckCircle, AlertTriangle } from 'lucide-react';
 import { translations } from '@/lib/translations';
+import { validatePassword, getPasswordStrengthColor, getPasswordStrengthLabel } from '@/lib/utils/password-validator';
+import { logActivity, logActivityError, logSessionStart } from '@/lib/utils/activity-logger';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [passwordFeedback, setPasswordFeedback] = useState<any>(null);
   const supabase = createClient();
 
   // Check if already logged in
@@ -38,30 +41,92 @@ export default function AdminLoginPage() {
     checkAuth();
   }, [supabase, router]);
 
+  // Real-time password validation
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (value.length > 0) {
+      setPasswordFeedback(validatePassword(value));
+    } else {
+      setPasswordFeedback(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      // Supabase Auth ile giriş isteği
+      // Validate email
+      if (!email || !email.includes('@')) {
+        setError('Lütfen geçerli bir e-posta adresi girin');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate password
+      if (!password || password.length < 6) {
+        setError('Lütfen şifrenizi girin');
+        setIsLoading(false);
+        return;
+      }
+
+      // Attempt login
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError) {
-        setError(translations.login.invalidCredentials);
+        // Log failed login attempt
+        await logActivityError(
+          { action: 'login', resourceType: 'auth' },
+          authError
+        );
+
+        // User-friendly error messages
+        if (authError.message.includes('Invalid login credentials')) {
+          setError('E-posta veya şifre hatalı. Lütfen tekrar kontrol edin.');
+        } else if (authError.message.includes('Email not confirmed')) {
+          setError('E-posta adresiniz doğrulanmamış. Lütfen e-postanızı kontrol edin.');
+        } else if (authError.message.includes('User not found')) {
+          setError('Bu e-posta adresiyle bir hesap bulunamadı.');
+        } else if (authError.message.includes('too_many_requests')) {
+          setError('Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.');
+        } else {
+          setError(`Giriş hatası: ${authError.message}`);
+        }
+        
         setIsLoading(false);
         return;
       }
 
-      if (data.session) {
-        // Hard redirect to clear cache and state
-        window.location.href = '/admin/dashboard';
+      if (data.session && data.user) {
+        // Log successful login
+        await logActivity({
+          action: 'login',
+          resourceType: 'auth',
+          resourceName: data.user.email,
+        });
+
+        // Log session start
+        await logSessionStart(data.user.id, data.user.email || '');
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard';
+        }, 500);
       }
     } catch (err) {
-      setError(translations.login.error);
+      const error = err instanceof Error ? err : new Error('Bilinmeyen bir hata oluştu');
+      
+      // Log the error
+      await logActivityError(
+        { action: 'login', resourceType: 'auth' },
+        error
+      );
+
+      setError('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.');
       setIsLoading(false);
     }
   };
@@ -117,11 +182,63 @@ export default function AdminLoginPage() {
                 type="password"
                 placeholder={translations.login.passwordPlaceholder}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)}
                 className="mt-1.5 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                 disabled={isLoading}
                 required
               />
+              
+              {/* Password Strength Indicator */}
+              {passwordFeedback && password.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {/* Strength Bar */}
+                  <div className="flex gap-1">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-2 flex-1 rounded-full transition-colors ${
+                          i < Math.ceil(passwordFeedback.score / 25)
+                            ? getPasswordStrengthColor(passwordFeedback.strength)
+                            : 'bg-slate-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Strength Label */}
+                  <p className="text-xs font-medium text-slate-600">
+                    Şifre Gücü:{' '}
+                    <span className={`font-bold ${
+                      passwordFeedback.strength === 'weak' ? 'text-red-600' :
+                      passwordFeedback.strength === 'fair' ? 'text-yellow-600' :
+                      passwordFeedback.strength === 'good' ? 'text-blue-600' :
+                      'text-green-600'
+                    }`}>
+                      {getPasswordStrengthLabel(passwordFeedback.strength)}
+                    </span>
+                  </p>
+
+                  {/* Feedback */}
+                  {passwordFeedback.feedback.length > 0 && (
+                    <div className="space-y-1">
+                      {passwordFeedback.feedback.map((item: string, idx: number) => (
+                        <p key={idx} className="text-xs text-amber-700 flex gap-1">
+                          <AlertTriangle size={12} className="flex-shrink-0 mt-0.5" />
+                          {item}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Success Indicator */}
+                  {passwordFeedback.isValid && (
+                    <p className="text-xs text-green-700 flex gap-1">
+                      <CheckCircle size={12} className="flex-shrink-0 mt-0.5" />
+                      Şifre güçlü ve güvenli
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && (
