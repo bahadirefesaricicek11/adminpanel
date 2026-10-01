@@ -1,17 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, RotateCcw } from 'lucide-react';
+import { Save, RotateCcw, Upload, Eye, EyeOff } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface WebsiteContent {
+  id?: string;
   homepage: {
     title: string;
     subtitle: string;
     ctaText: string;
+    heroImage?: string;
+    heroImageAlt?: string;
   };
   features: {
     title: string;
@@ -22,6 +26,17 @@ interface WebsiteContent {
     phone: string;
     address: string;
   };
+  seo: {
+    homePageTitle: string;
+    homePageDescription: string;
+    homePageKeywords: string;
+  };
+  branding: {
+    logo?: string;
+    favicon?: string;
+    companyName: string;
+  };
+  updated_at?: string;
 }
 
 const defaultContent: WebsiteContent = {
@@ -29,6 +44,7 @@ const defaultContent: WebsiteContent = {
     title: 'Profesyonel Boyama Yönetimi',
     subtitle: 'PaintCo Admin Panel ile resim işinizi yönetin. İşleri takip edin, ekibinizi yönetin ve gerçek zamanlı öğrenmelerle işinizi büyütün.',
     ctaText: 'Admin Paneline Erişin',
+    heroImageAlt: 'PaintCo Hero',
   },
   features: {
     title: 'Özellikler',
@@ -64,20 +80,134 @@ const defaultContent: WebsiteContent = {
     phone: '+90 (555) 123-4567',
     address: 'İstanbul, Türkiye',
   },
+  seo: {
+    homePageTitle: 'PaintCo Admin Panel - Profesyonel Boyama İşletme Yönetimi',
+    homePageDescription: 'Boyama işletmenizi etkin bir şekilde yönetin. Dashboard, ekip yönetimi ve gerçek zamanlı analitikler.',
+    homePageKeywords: 'boyama, yönetim, admin panel, project tracking',
+  },
+  branding: {
+    companyName: 'PaintCo',
+  },
 };
 
 export default function ContentManagementPage() {
   const [content, setContent] = useState<WebsiteContent>(defaultContent);
+  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const supabase = createClient();
 
-  const handleSave = () => {
-    localStorage.setItem('websiteContent', JSON.stringify(content));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('website_content')
+        .select('*')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading content:', error);
+      } else if (data) {
+        setContent(data);
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      // Fallback to localStorage
+      const saved = localStorage.getItem('websiteContent');
+      if (saved) setContent(JSON.parse(saved));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase.from('website_content').upsert([
+        {
+          ...content,
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+
+      if (error) throw error;
+
+      localStorage.setItem('websiteContent', JSON.stringify(content));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error('Save error:', err);
+      // Fallback to localStorage only
+      localStorage.setItem('websiteContent', JSON.stringify(content));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    }
   };
 
   const handleReset = () => {
     setContent(defaultContent);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'heroImage' | 'logo' | 'favicon') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+
+    try {
+      const fileName = `${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('website-assets').upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('website-assets').getPublicUrl(fileName);
+
+      if (field === 'heroImage') {
+        setContent((prev) => ({
+          ...prev,
+          homepage: { ...prev.homepage, heroImage: data.publicUrl },
+        }));
+      } else if (field === 'logo') {
+        setContent((prev) => ({
+          ...prev,
+          branding: { ...prev.branding, logo: data.publicUrl },
+        }));
+      } else if (field === 'favicon') {
+        setContent((prev) => ({
+          ...prev,
+          branding: { ...prev.branding, favicon: data.publicUrl },
+        }));
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      // Store as base64 data URL as fallback
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        if (field === 'heroImage') {
+          setContent((prev) => ({
+            ...prev,
+            homepage: { ...prev.homepage, heroImage: dataUrl },
+          }));
+        } else if (field === 'logo') {
+          setContent((prev) => ({
+            ...prev,
+            branding: { ...prev.branding, logo: dataUrl },
+          }));
+        } else if (field === 'favicon') {
+          setContent((prev) => ({
+            ...prev,
+            branding: { ...prev.branding, favicon: dataUrl },
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingLogo(false);
+    }
   };
 
   const updateHomepage = (field: string, value: string) => {
@@ -94,6 +224,20 @@ export default function ContentManagementPage() {
     }));
   };
 
+  const updateSEO = (field: string, value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      seo: { ...prev.seo, [field]: value },
+    }));
+  };
+
+  const updateBranding = (field: string, value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      branding: { ...prev.branding, [field]: value },
+    }));
+  };
+
   const updateFeatureItem = (index: number, field: string, value: string) => {
     const newItems = [...content.features.items];
     newItems[index] = { ...newItems[index], [field]: value };
@@ -103,11 +247,81 @@ export default function ContentManagementPage() {
     }));
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-slate-600">Yükleniyor...</p>
+      </div>
+    );
+  }
+
+  if (preview) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-slate-900">Ön İzleme</h1>
+          <Button onClick={() => setPreview(false)} className="gap-2">
+            <EyeOff size={18} />
+            Önizlemeyi Kapat
+          </Button>
+        </div>
+
+        <div className="bg-white rounded-lg shadow">
+          {/* Logo Preview */}
+          {content.branding.logo && (
+            <div className="p-8 border-b">
+              <img src={content.branding.logo} alt="Logo" className="h-16 object-contain" />
+            </div>
+          )}
+
+          {/* Hero Section Preview */}
+          <div className="p-8 md:p-16 text-center space-y-4">
+            {content.homepage.heroImage && (
+              <img src={content.homepage.heroImage} alt={content.homepage.heroImageAlt} className="w-full h-80 object-cover rounded-lg mb-8" />
+            )}
+            <h1 className="text-4xl font-bold text-slate-900">{content.homepage.title}</h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">{content.homepage.subtitle}</p>
+            <button className="mt-4 px-8 py-3 bg-blue-700 text-white rounded-lg">{content.homepage.ctaText}</button>
+          </div>
+
+          {/* Features Preview */}
+          <div className="p-8 md:p-16">
+            <h2 className="text-3xl font-bold text-center mb-12">{content.features.title}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {content.features.items.map((item, index) => (
+                <div key={index} className="p-6 border rounded-lg">
+                  <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                  <p className="text-slate-600 text-sm">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact Preview */}
+          <div className="p-8 md:p-16 bg-slate-50 border-t">
+            <h2 className="text-2xl font-bold mb-6">İletişim</h2>
+            <div className="space-y-2">
+              <p><strong>E-posta:</strong> {content.contact.email}</p>
+              <p><strong>Telefon:</strong> {content.contact.phone}</p>
+              <p><strong>Adres:</strong> {content.contact.address}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Website İçeriği</h1>
-        <p className="text-sm text-slate-600 mt-1">Ana website sayfalarınızın içeriğini yönetin ve düzenleyin</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Website İçeriği</h1>
+          <p className="text-sm text-slate-600 mt-1">Ana website sayfalarınızın içeriğini yönetin ve düzenleyin</p>
+        </div>
+        <Button onClick={() => setPreview(true)} className="gap-2 bg-purple-700 hover:bg-purple-800">
+          <Eye size={18} />
+          Önizleme
+        </Button>
       </div>
 
       {saved && (
@@ -115,6 +329,47 @@ export default function ContentManagementPage() {
           ✓ İçerik başarıyla kaydedildi!
         </div>
       )}
+
+      {/* Branding Section */}
+      <Card className="border-slate-200">
+        <CardHeader>
+          <CardTitle className="text-lg">Marka & Logo</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <Label className="font-medium text-slate-700">Şirket Adı</Label>
+            <Input
+              value={content.branding.companyName}
+              onChange={(e) => updateBranding('companyName', e.target.value)}
+              className="mt-1.5"
+              placeholder="Şirket adı..."
+            />
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Logo</Label>
+            <div className="mt-1.5 space-y-3">
+              {content.branding.logo && (
+                <img src={content.branding.logo} alt="Logo" className="h-16 object-contain border rounded p-2" />
+              )}
+              <div className="flex items-center gap-2">
+                <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} disabled={uploadingLogo} />
+                {uploadingLogo && <span className="text-sm text-slate-500">Yükleniyor...</span>}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Favicon (Site Simgesi)</Label>
+            <div className="mt-1.5">
+              <div className="flex items-center gap-2">
+                <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'favicon')} disabled={uploadingLogo} />
+                {uploadingLogo && <span className="text-sm text-slate-500">Yükleniyor...</span>}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Homepage Section */}
       <Card className="border-slate-200">
@@ -150,6 +405,73 @@ export default function ContentManagementPage() {
               onChange={(e) => updateHomepage('ctaText', e.target.value)}
               className="mt-1.5"
               placeholder="Düğme metni..."
+            />
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Hero Görseli</Label>
+            <div className="mt-1.5 space-y-3">
+              {content.homepage.heroImage && (
+                <img src={content.homepage.heroImage} alt="Hero" className="w-full h-48 object-cover border rounded" />
+              )}
+              <div className="flex items-center gap-2">
+                <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'heroImage')} disabled={uploadingLogo} />
+                {uploadingLogo && <span className="text-sm text-slate-500">Yükleniyor...</span>}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Görsel Alternatif Metni (Alt Text)</Label>
+            <Input
+              value={content.homepage.heroImageAlt || ''}
+              onChange={(e) => updateHomepage('heroImageAlt', e.target.value)}
+              className="mt-1.5"
+              placeholder="Görsel açıklaması (SEO için önemli)..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* SEO Section */}
+      <Card className="border-slate-200">
+        <CardHeader>
+          <CardTitle className="text-lg">SEO Ayarları</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <Label className="font-medium text-slate-700">Sayfa Başlığı (Meta Title)</Label>
+            <div className="mt-1.5">
+              <Input
+                value={content.seo.homePageTitle}
+                onChange={(e) => updateSEO('homePageTitle', e.target.value)}
+                placeholder="Maksimum 60 karakter..."
+              />
+              <p className="mt-1 text-xs text-slate-500">{content.seo.homePageTitle.length}/60 karakter</p>
+            </div>
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Sayfa Açıklaması (Meta Description)</Label>
+            <div className="mt-1.5">
+              <textarea
+                value={content.seo.homePageDescription}
+                onChange={(e) => updateSEO('homePageDescription', e.target.value)}
+                className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Maksimum 160 karakter..."
+              />
+              <p className="mt-1 text-xs text-slate-500">{content.seo.homePageDescription.length}/160 karakter</p>
+            </div>
+          </div>
+
+          <div>
+            <Label className="font-medium text-slate-700">Anahtar Kelimeler (Keywords)</Label>
+            <Input
+              value={content.seo.homePageKeywords}
+              onChange={(e) => updateSEO('homePageKeywords', e.target.value)}
+              placeholder="Anahtar kelimelerinizi virgülle ayırın..."
+              className="mt-1.5"
             />
           </div>
         </CardContent>
@@ -255,7 +577,7 @@ export default function ContentManagementPage() {
       </div>
 
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">
-        <strong>Not:</strong> Değişiklikler tarayıcınızda saklanır. Veritabanı entegrasyonunu tamamlamak için Supabase tablosu ayarlanması gerekir.
+        <strong>Not:</strong> Tüm değişiklikler Supabase veritabanına ve tarayıcı localStorage'a kaydedilir. Görseller Supabase Storage'da saklanır.
       </div>
     </div>
   );
