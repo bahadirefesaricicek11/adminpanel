@@ -23,17 +23,17 @@ export function AdminTools() {
 
   return (
     <div className="flex items-center gap-2">
-      <form action="/admin/dashboard/search" className="hidden md:flex items-center border border-slate-200 rounded-lg bg-white">
-        <Search size={16} className="ml-3 text-slate-400" />
+      <form action="/admin/dashboard/search" className="hidden items-center rounded-xl border border-[#12242a]/10 bg-white md:flex">
+        <Search size={16} className="ml-3 text-[#12242a]/35" />
         <input
           name="q"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="İçerikte ara..."
-          className="w-44 px-2 py-2 text-sm outline-none bg-transparent"
+          className="w-44 bg-transparent px-2 py-2 text-sm outline-none"
         />
       </form>
-      <Link href="/admin/dashboard/notifications" aria-label="Bildirimler" className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+      <Link href="/admin/dashboard/notifications" aria-label="Bildirimler" className="relative rounded-xl p-2 text-[#12242a]/60 hover:bg-[#12242a]/5">
         <Bell size={18} />
         {unreadCount > 0 && (
           <span className="absolute -right-1 -top-1 min-w-4 h-4 px-1 rounded-full bg-red-600 text-white text-[10px] flex items-center justify-center">

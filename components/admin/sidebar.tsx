@@ -36,10 +36,12 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4">
-      <div className="space-y-6">
-        <div className="px-3 py-2">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">Yönetim Paneli</h2>
+    <aside className="flex min-h-screen w-64 shrink-0 flex-col justify-between bg-[#12242a] p-4 text-white">
+      <div className="space-y-8">
+        <div className="border-b border-white/10 px-3 pb-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d9ff4f]">PaintCo</p>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight">Kontrol odası</h2>
+          <p className="mt-1 text-xs text-white/40">Yönetim paneli</p>
         </div>
 
         <nav className="space-y-1">
@@ -51,13 +53,13 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
+                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200',
                   item.isActive
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-[#d9ff4f] font-semibold text-[#12242a]'
+                    : 'text-white/55 hover:bg-white/10 hover:text-white'
                 )}
               >
-                <Icon size={18} className={item.isActive ? 'text-blue-600' : 'text-slate-400'} />
+                <Icon size={18} className={item.isActive ? 'text-[#12242a]' : 'text-white/40'} />
                 <span>{item.title}</span>
               </Link>
             );
@@ -65,10 +67,10 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="pt-4 border-t border-slate-100">
+      <div className="border-t border-white/10 pt-4">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/55 transition-colors duration-200 hover:bg-[#e4554f]/15 hover:text-[#ff9d96]"
         >
           <LogOut size={18} />
           <span>Çıkış Yap</span>

@@ -44,10 +44,10 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{translations.dashboard.title}</h1>
-        <p className="text-sm text-slate-600 mt-1">{translations.dashboard.subtitle}</p>
+    <div className="space-y-7">
+      <div className="flex flex-col justify-between gap-4 border-b border-[#12242a]/10 pb-6 md:flex-row md:items-end">
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4e8790]">Genel bakış</p><h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#12242a]">{translations.dashboard.title}</h1><p className="mt-2 text-sm text-[#12242a]/55">{translations.dashboard.subtitle}</p></div>
+        <div className="text-xs font-medium text-[#12242a]/45">Son güncelleme · şimdi</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -79,18 +79,18 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <Card className="bg-white border-slate-200 shadow-sm">
+      <Card className="border-[#12242a]/10 bg-[#f8faf5] shadow-[0_8px_24px_rgba(18,36,42,0.05)]">
         <CardHeader>
-          <CardTitle className="text-lg font-bold text-slate-900">{translations.dashboard.monthlyRevenue}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[#12242a]">{translations.dashboard.monthlyRevenue}</CardTitle>
         </CardHeader>
         <CardContent className="h-80 pt-4">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-              <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d8e0d4" />
+              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: '#688078', fontSize: 12 }} />
+              <YAxis tickLine={false} axisLine={false} tick={{ fill: '#688078', fontSize: 12 }} />
               <Tooltip formatter={(value) => [`₺${Number(value).toLocaleString('tr-TR')}`, 'Gelir']} />
-              <Bar dataKey="revenue" fill="#2563eb" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="revenue" fill="#b7dc32" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
