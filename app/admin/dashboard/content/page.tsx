@@ -126,14 +126,37 @@ export default function ContentManagementPage() {
 
   const handleSave = async () => {
     try {
-      const { error } = await supabase.from('website_content').upsert([
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: existing } = await supabase.from('website_content').select('id').limit(1).maybeSingle();
+
+      if (existing?.id) {
+        await supabase.from('content_versions').insert({
+          content_id: existing.id,
+          snapshot: content,
+          created_by: user?.id,
+          created_by_email: user?.email,
+          change_note: 'İçerik kaydedildi',
+        });
+      }
+
+      const { data: savedContent, error } = await supabase.from('website_content').upsert([
         {
           ...content,
           updated_at: new Date().toISOString(),
         },
-      ]);
+      ]).select('id').single();
 
       if (error) throw error;
+
+      if (savedContent?.id) {
+        await supabase.from('content_search_index').delete().eq('content_id', savedContent.id);
+        await supabase.from('content_search_index').insert([
+          { content_id: savedContent.id, section: 'Ana Sayfa', title: content.homepage.title, body: `${content.homepage.subtitle} ${content.homepage.ctaText}` },
+          { content_id: savedContent.id, section: 'Özellikler', title: content.features.title, body: content.features.items.map((item) => `${item.title} ${item.description}`).join(' ') },
+          { content_id: savedContent.id, section: 'İletişim', title: content.branding.companyName, body: `${content.contact.email} ${content.contact.phone} ${content.contact.address}` },
+          { content_id: savedContent.id, section: 'SEO', title: content.seo.homePageTitle, body: `${content.seo.homePageDescription} ${content.seo.homePageKeywords}` },
+        ]);
+      }
 
       localStorage.setItem('websiteContent', JSON.stringify(content));
       setSaved(true);

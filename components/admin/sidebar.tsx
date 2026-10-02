@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useCallback } from 'react';
-import { LayoutDashboard, FileText, Users, Settings, LogOut, Activity } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings, LogOut, Activity, ShieldCheck, History, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
@@ -11,7 +11,10 @@ const NAV_ITEMS = [
   { title: 'Kontrol Paneli', href: '/admin/dashboard', icon: LayoutDashboard, exact: true },
   { title: 'Website İçeriği', href: '/admin/dashboard/content', icon: FileText },
   { title: 'Kullanıcılar', href: '/admin/dashboard/users', icon: Users },
+  { title: 'Roller ve Yetkiler', href: '/admin/dashboard/roles', icon: ShieldCheck },
   { title: 'Faaliyet Günlükleri', href: '/admin/dashboard/activity-logs', icon: Activity },
+  { title: 'Sürüm Geçmişi', href: '/admin/dashboard/versions', icon: History },
+  { title: 'Analitik ve Raporlar', href: '/admin/dashboard/analytics', icon: BarChart3 },
   { title: 'Ayarlar', href: '/admin/dashboard/settings', icon: Settings },
 ];
 

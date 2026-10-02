@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
@@ -9,6 +10,7 @@ const WARNING_TIME = 5 * 60 * 1000; // Show warning 5 minutes before logout
 
 export function useSessionTimeout() {
   const router = useRouter();
+  const pathname = usePathname();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const warningTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastActivityRef = useRef<number>(0);
@@ -69,6 +71,8 @@ export function useSessionTimeout() {
   }, [resetTimer]);
 
   useEffect(() => {
+    if (pathname === '/admin/login') return;
+
     // Initialize activity timestamp
     lastActivityRef.current = Date.now();
     
@@ -105,7 +109,7 @@ export function useSessionTimeout() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
     };
-  }, [resetTimer, extendSession]);
+  }, [pathname, resetTimer, extendSession]);
 
   return { extendSession };
 }
