@@ -4,31 +4,31 @@
 
 @layer base {
   :root {
-    --background: 84 24% 96%;
-    --foreground: 201 38% 12%;
-    --card: 60 33% 99%;
-    --card-foreground: 201 38% 12%;
-    --popover: 60 33% 99%;
-    --popover-foreground: 201 38% 12%;
-    --primary: 201 38% 12%;
-    --primary-foreground: 72 100% 94%;
-    --secondary: 82 25% 90%;
-    --secondary-foreground: 201 38% 12%;
-    --muted: 82 25% 90%;
-    --muted-foreground: 201 14% 43%;
-    --accent: 72 100% 63%;
-    --accent-foreground: 201 38% 12%;
+    --background: 210 40% 98%;
+    --foreground: 215 35% 16%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 35% 16%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 35% 16%;
+    --primary: 215 75% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 215 35% 16%;
+    --muted: 210 40% 94%;
+    --muted-foreground: 215 15% 45%;
+    --accent: 199 89% 74%;
+    --accent-foreground: 215 35% 16%;
     --destructive: 4 72% 53%;
     --destructive-foreground: 0 0% 100%;
-    --border: 82 18% 82%;
-    --input: 82 18% 82%;
-    --ring: 72 100% 48%;
-    --chart-1: 72 100% 48%;
-    --chart-2: 190 70% 44%;
-    --chart-3: 201 38% 12%;
+    --border: 214 28% 88%;
+    --input: 214 28% 88%;
+    --ring: 215 75% 42%;
+    --chart-1: 215 75% 42%;
+    --chart-2: 199 89% 55%;
+    --chart-3: 215 35% 25%;
     --chart-4: 34 86% 60%;
     --chart-5: 4 72% 53%;
-    --radius: 0.75rem;
+    --radius: 0.65rem;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -60,39 +60,39 @@
 
 @layer components {
   .admin-surface .bg-white {
-    background-color: #f8faf5;
+    background-color: #ffffff;
   }
 
   .admin-surface .bg-slate-50 {
-    background-color: #edf1eb;
+    background-color: #f4f8fc;
   }
 
   .admin-surface .border-slate-200,
   .admin-surface .border-slate-200\/80 {
-    border-color: rgb(18 36 42 / 0.11);
+    border-color: rgb(37 113 197 / 0.14);
   }
 
   .admin-surface .bg-blue-700,
   .admin-surface .bg-blue-600 {
-    background-color: #12242a;
+    background-color: #2571c5;
   }
 
   .admin-surface .text-blue-600,
   .admin-surface .text-blue-700 {
-    color: #4e8790;
+    color: #2571c5;
   }
 
   .admin-surface .bg-blue-50 {
-    background-color: #e6f0e8;
+    background-color: #e3f1ff;
   }
 
   .admin-surface .text-slate-900 {
-    color: #12242a;
+    color: #18324b;
   }
 
   .admin-surface .text-slate-600,
   .admin-surface .text-slate-500 {
-    color: rgb(18 36 42 / 0.57);
+    color: rgb(24 50 75 / 0.57);
   }
 }
 

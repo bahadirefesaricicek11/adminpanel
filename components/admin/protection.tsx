@@ -81,7 +81,7 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
   return (
     <>
       <SessionWarning />
-      <div className="flex h-screen bg-[#edf1eb]">
+      <div className="flex h-screen bg-[#f4f8fc]">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <AdminHeader />

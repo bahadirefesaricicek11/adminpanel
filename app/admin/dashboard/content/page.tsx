@@ -41,9 +41,9 @@ interface WebsiteContent {
 
 const defaultContent: WebsiteContent = {
   homepage: {
-    title: 'Profesyonel Boyama Yönetimi',
-    subtitle: 'PaintCo Admin Panel ile resim işinizi yönetin. İşleri takip edin, ekibinizi yönetin ve gerçek zamanlı öğrenmelerle işinizi büyütün.',
-    ctaText: 'Admin Paneline Erişin',
+    title: 'Duvarlarınız için temiz, özenli boya işleri',
+    subtitle: 'İç cephe, dış cephe ve oda boyama işlerinizi tekliften teslimata kadar düzenli yönetin.',
+    ctaText: 'Teklif almak için iletişime geçin',
     heroImageAlt: 'PaintCo Hero',
   },
   features: {
