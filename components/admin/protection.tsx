@@ -12,6 +12,7 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [authorized, setAuthorized] = useState(true);
+  const [authError, setAuthError] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
   const { extendSession } = useSessionTimeout();
@@ -25,11 +26,16 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
     }
 
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-      if (!user) {
-        window.location.href = '/admin/login';
-      } else {
+        if (error) throw error;
+
+        if (!user) {
+          window.location.href = '/admin/login';
+          return;
+        }
+
         const profile = await getCurrentAdminProfile();
         const role = profile?.role as AdminRole | undefined;
         const requiredPermission = pathname.includes('/users') || pathname.includes('/roles')
@@ -47,6 +53,10 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
 
         setAuthenticated(true);
         setLoading(false);
+      } catch (error) {
+        console.error('Admin authentication check failed:', error);
+        setAuthError(true);
+        setLoading(false);
       }
     };
 
@@ -59,6 +69,18 @@ export function AdminProtection({ children }: { children: React.ReactNode }) {
   }
 
   if (loading || !authenticated) {
+    if (authError) {
+      return (
+        <div className="flex h-screen w-full items-center justify-center bg-[#f4f8fc] p-6">
+          <div className="max-w-md rounded-lg border border-red-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-xl font-bold text-[#18324b]">Oturum doğrulanamadı</h1>
+            <p className="mt-2 text-sm text-[#18324b]/60">Bağlantı kurulamadı. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
+            <button onClick={() => window.location.reload()} className="mt-5 rounded-lg bg-[#2571c5] px-4 py-2 text-sm font-semibold text-white">Tekrar dene</button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex h-screen w-full items-center justify-center bg-slate-50">
         <div className="text-slate-500 font-medium">Oturum doğrulanıyor...</div>

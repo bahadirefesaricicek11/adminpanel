@@ -59,6 +59,16 @@
 }
 
 @layer components {
+  .admin-surface {
+    background-color: #f4f8fc;
+    background-image: linear-gradient(rgb(37 113 197 / 0.035) 1px, transparent 1px), linear-gradient(90deg, rgb(37 113 197 / 0.035) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .admin-surface > * {
+    position: relative;
+  }
+
   .admin-surface .bg-white {
     background-color: #ffffff;
   }
@@ -93,6 +103,11 @@
   .admin-surface .text-slate-600,
   .admin-surface .text-slate-500 {
     color: rgb(24 50 75 / 0.57);
+  }
+
+  .admin-surface .rounded-xl,
+  .admin-surface .rounded-2xl {
+    border-radius: 0.65rem;
   }
 }
 

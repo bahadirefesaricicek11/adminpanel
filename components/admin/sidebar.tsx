@@ -36,12 +36,12 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="flex min-h-screen w-64 shrink-0 flex-col justify-between border-r border-[#dce8f3] bg-white p-4 text-[#18324b]">
+    <aside className="flex min-h-screen w-64 shrink-0 flex-col justify-between border-r border-[#c9d9e8] bg-white p-4 text-[#18324b] max-md:w-[76px] max-md:p-2">
       <div className="space-y-8">
-        <div className="border-b border-[#dce8f3] px-3 pb-5">
+        <div className="border-b border-[#dce8f3] px-3 pb-5 max-md:px-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#2571c5]">PaintCo</p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight">Kontrol odası</h2>
-          <p className="mt-1 text-xs text-[#18324b]/45">Duvar boyama merkezi</p>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight max-md:hidden">Kontrol odası</h2>
+          <p className="mt-1 text-xs text-[#18324b]/45 max-md:hidden">Duvar boyama merkezi</p>
         </div>
 
         <nav className="space-y-1">
@@ -53,14 +53,14 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 max-md:justify-center max-md:px-2',
                   item.isActive
                     ? 'bg-[#e3f1ff] font-semibold text-[#1d65ad]'
                     : 'text-[#18324b]/60 hover:bg-[#f1f7fd] hover:text-[#18324b]'
                 )}
               >
                 <Icon size={18} className={item.isActive ? 'text-[#2571c5]' : 'text-[#18324b]/35'} />
-                <span>{item.title}</span>
+                <span className="max-md:hidden">{item.title}</span>
               </Link>
             );
           })}
